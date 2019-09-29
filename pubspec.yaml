@@ -1,8 +1,9 @@
 name: whiteboardkit
 description: A Flutter whiteboard implementation.
 version: 0.1.6
-author:
-homepage:
+author: abdulaziz mohammed <me@abdulaziz.dev>
+homepage: http://abdulaziz.dev
+repository: https://github.com/abdulaziz-mohammed/whiteboardkit
 
 environment:
   sdk: ">=2.2.2 <3.0.0"
