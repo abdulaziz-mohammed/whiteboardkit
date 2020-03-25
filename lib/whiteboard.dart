@@ -45,6 +45,13 @@ class WhiteboardState extends State<Whiteboard> {
   }
 
   @override
+  void setState(fn) {
+    if (mounted) {
+      super.setState(fn);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
