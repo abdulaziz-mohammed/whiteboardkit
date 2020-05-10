@@ -2,18 +2,9 @@
 
 A Flutter whiteboard widget with so much extendability and flexibility to be used with no need to rewrite your own whiteboard. Enjoy !
 
-![Package demo](screenshot.gif) 
+![Package demo](screenshot.gif)  
 
-## Installation
-
-Add the following to pubspec.yaml
-```yaml
-dependencies:
-  ...
-  whiteboardkit: ^0.1.6
-```
-
-## Usage Example
+## Usage
 
 import whiteboardkit.dart
 

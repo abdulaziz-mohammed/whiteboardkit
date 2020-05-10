@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:math';
-import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'whiteboard_draw.dart';
@@ -11,7 +10,7 @@ class GestureWhiteboardController extends WhiteboardController {
 
   bool _newLine = true;
   DateTime lastPan;
-  DateTime lastLine;
+  DateTime firstPointTime;
 
   double brushSize = 20.0;
   Color brushColor = Colors.blue;
@@ -19,7 +18,7 @@ class GestureWhiteboardController extends WhiteboardController {
   double eraserSize = 20.0;
 
   GestureWhiteboardController({WhiteboardDraw draw}) {
-    if(draw != null) {
+    if (draw != null) {
       this.draw = draw.clone();
       _streamController.sink.add(this.draw);
     }
@@ -44,7 +43,7 @@ class GestureWhiteboardController extends WhiteboardController {
             width: erase ? eraserSize : brushSize,
           ));
       _newLine = false;
-      lastLine = DateTime.now();
+      firstPointTime = DateTime.now();
     }
 
     if (this.draw.lines.last.points.length > 2 &&
@@ -69,17 +68,17 @@ class GestureWhiteboardController extends WhiteboardController {
   onPanEnd() {
     _newLine = true;
     this.draw.lines.last.duration =
-        DateTime.now().difference(lastLine).inMilliseconds;
+        DateTime.now().difference(firstPointTime).inMilliseconds;
 
     if (this.draw.lines.length > 0 && this.draw.lines.last.points.length == 1) {
       var secondPoint = new Offset(this.draw.lines.last.points.last.x + 1,
           this.draw.lines.last.points.last.y + 1);
       this.draw.lines.last.points.add(Point.fromOffset(secondPoint));
-      _streamController.sink.add(this.draw);
     }
     if (this.draw.lines.length > 0 && this.draw.lines.last.points.length == 0) {
       this.draw.lines.removeLast();
     }
+    _streamController.sink.add(this.draw);
   }
 
   undo() {

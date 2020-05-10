@@ -8,8 +8,12 @@ enum ToolBoxSelected { none, size, color, erase }
 class ToolBox extends StatefulWidget {
   final double width;
   final GestureWhiteboardController sketchController;
+  final Color color;
 
-  ToolBox({@required this.width, @required this.sketchController});
+  ToolBox(
+      {@required this.width,
+      @required this.sketchController,
+      @required this.color});
 
   @override
   _ToolBoxState createState() => _ToolBoxState();
@@ -49,40 +53,64 @@ class _ToolBoxState extends State<ToolBox> {
 
   @override
   Widget build(BuildContext context) {
+    var row = <Widget>[];
+
+    switch (selected) {
+      case ToolBoxSelected.erase:
+        row =
+            brushSizes.map((size) => _buildEraseToolSizeButton(size)).toList();
+        break;
+      case ToolBoxSelected.size:
+        row = brushSizes.map((size) => _buildBrushToolSizeButton(size)).toList();
+        break;
+      case ToolBoxSelected.color:
+        row = brushColors.map((color) => _buildBrushToolColorButton(color)).toList();
+        break;
+      default:
+        break;
+    }
+
     return Column(
       children: <Widget>[
         Container(
-          child: selected == ToolBoxSelected.erase
-              ? Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: brushSizes
-                      .map((size) => _buildEraseToolSizeButton(size))
-                      .toList(),
-                )
-              : Container(),
+          width: MediaQuery.of(context).size.width - 1,
+          child: Center(
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: row.length > 0
+                  ? Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: <Widget>[
+                        ...row,
+                      ],
+                    ) : Container(),
+            ),
+          ),
         ),
+        // Stack(
+        //   alignment: Alignment.center,
+        //   children: <Widget>[
+        //     Positioned(
+        //       top: 30,
+        //       height: 100,
+        //       width: 200,
+        //       child: Container(
+        //         child: selected == ToolBoxSelected.color
+        //             ? Row(
+        //                 mainAxisAlignment: MainAxisAlignment.center,
+        //                 crossAxisAlignment: CrossAxisAlignment.center,
+        //                 children: brushColors
+        //                     .map((color) => _buildBrushToolColorButton(color))
+        //                     .toList(),
+        //               )
+        //             : Container(),
+        //       ),
+        //     ),
+        //   ],
+        // ),
         Container(
-          child: selected == ToolBoxSelected.size
-              ? Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: brushSizes
-                      .map((size) => _buildBrushToolSizeButton(size))
-                      .toList(),
-                )
-              : Container(),
-        ),
-        Container(
-          child: selected == ToolBoxSelected.color
-              ? Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: brushColors
-                      .map((color) => _buildBrushToolColorButton(color))
-                      .toList(),
-                )
-              : Container(),
+          height: 30,
         ),
         Container(
           height: 80.0,
@@ -97,7 +125,10 @@ class _ToolBoxState extends State<ToolBox> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     _buildToolButton(
-                      Icon(Icons.fiber_manual_record),
+                      Icon(
+                        FontAwesomeIcons.pen,
+                        size: 20,
+                      ),
                       select: ToolBoxSelected.size,
                     ),
                     _buildToolButton(Icon(Icons.color_lens),
@@ -126,15 +157,21 @@ class _ToolBoxState extends State<ToolBox> {
                       Icon(
                         FontAwesomeIcons.file,
                         size: 26.0,
+                        color: widget.color,
                       ),
                       onPress: () => {widget.sketchController.wipe()},
                     ),
-                    _buildToolButton(Icon(Icons.undo),
+                    _buildToolButton(
+                        Icon(
+                          FontAwesomeIcons.undo,
+                          color: widget.color,
+                          size: 24,
+                        ),
                         onPress: widget.sketchController.undo),
                   ],
                 ),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  // color: Colors.white,
                   borderRadius: BorderRadius.circular(20),
                 ),
               )
@@ -171,10 +208,22 @@ class _ToolBoxState extends State<ToolBox> {
   }
 
   Widget _buildBrushToolSizeButton(double size) {
+    var first = brushSizes.indexOf(size) == 0;
+    var last = brushSizes.indexOf(size) == brushSizes.length - 1;
     return Container(
-      color: size == brushSize && !erase ? Colors.black12 : Colors.transparent,
+      decoration: BoxDecoration(
+        border: Border(
+          top: BorderSide(color: Colors.black12, width: 2),
+          bottom: BorderSide(color: Colors.black12, width: 2),
+          right: BorderSide(color: Colors.black12, width: first ? 2 : 1),
+          left: BorderSide(color: Colors.black12, width: last ? 2 : 1),
+        ),
+        color: size == brushSize && !erase ? Colors.grey[300] : Colors.white,
+      ),
+      height: 90,
+      width: 80,
       child: IconButton(
-        icon: Icon(Icons.fiber_manual_record),
+        icon: Icon(FontAwesomeIcons.pen),
         color: Colors.black54,
         iconSize: size * 1.6,
         onPressed: () => changeSize(size),
@@ -185,9 +234,18 @@ class _ToolBoxState extends State<ToolBox> {
   }
 
   Widget _buildBrushToolColorButton(Color color) {
+    var first = brushColors.indexOf(color) == 0;
+    var last = brushColors.indexOf(color) == brushColors.length - 1;
     return Container(
-      color:
-          color == brushColor && !erase ? Colors.black12 : Colors.transparent,
+      decoration: BoxDecoration(
+        border: Border(
+          top: BorderSide(color: Colors.black12, width: 2),
+          bottom: BorderSide(color: Colors.black12, width: 2),
+          right: BorderSide(color: Colors.black12, width: first ? 2 : 1),
+          left: BorderSide(color: Colors.black12, width: last ? 2 : 1),
+        ),
+        color: color == brushColor && !erase ? Colors.grey[300] : Colors.white,
+      ),
       child: IconButton(
         icon: Icon(Icons.color_lens),
         color: color,
@@ -200,8 +258,20 @@ class _ToolBoxState extends State<ToolBox> {
   }
 
   Widget _buildEraseToolSizeButton(double size) {
+    var first = brushSizes.indexOf(size) == 0;
+    var last = brushSizes.indexOf(size) == brushSizes.length - 1;
     return Container(
-      color: size == eraserSize && erase ? Colors.black12 : Colors.transparent,
+      decoration: BoxDecoration(
+        border: Border(
+          top: BorderSide(color: Colors.black12, width: 2),
+          bottom: BorderSide(color: Colors.black12, width: 2),
+          right: BorderSide(color: Colors.black12, width: first ? 2 : 1),
+          left: BorderSide(color: Colors.black12, width: last ? 2 : 1),
+        ),
+        color: size == eraserSize && erase ? Colors.grey[300] : Colors.white,
+      ),
+      height: 60,
+      width: 60,
       child: IconButton(
         icon: Icon(FontAwesomeIcons.eraser),
         color: new Color(0xffff93f5),

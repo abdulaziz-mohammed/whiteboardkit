@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:math';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
@@ -8,12 +7,9 @@ import 'package:whiteboardkit/whiteboard_controller.dart';
 import 'whiteboard_draw.dart';
 
 class AnimatedSketchController extends WhiteboardController {
-
   DrawGenerator generator;
 
   Size scaledSize;
-
-  bool _skip = false;
 
   AnimatedSketchController(WhiteboardDraw draw) {
     this.draw = draw.clone();
@@ -45,7 +41,7 @@ class AnimatedSketchController extends WhiteboardController {
 
   onPanEnd() {}
 
-  play() async{
+  play() async {
     generator.play(draw);
   }
 
@@ -86,34 +82,46 @@ class DrawGenerator {
 
   skip() => _skip = true;
 
-  play(WhiteboardDraw draw) async {
+  bool _closed = false;
+
+  bool _firstTimePlay = true;
+
+  play(WhiteboardDraw draw) {
     Future(() async {
-    _skip = false;
-    var currentDraw =
-        new WhiteboardDraw(lines: [], width: draw.width, height: draw.height);
+      _skip = false;
+      var currentDraw =
+          new WhiteboardDraw(lines: [], width: draw.width, height: draw.height);
 
-    for (var line in draw.lines) {
-      currentDraw.lines.add(line.copyWith(points: []));
-      for (var point in line.points) {
-        var duration = line.duration ~/ line.points.length;
-        if (cancel) _skip = true;
-        await Future.delayed(Duration(milliseconds: duration));
-        currentDraw.lines.last.points.add(point);
-        streamController.sink.add((currentDraw));
+      if (_firstTimePlay)
+        await Future.delayed(Duration(
+          seconds: 1,
+        ));
+      _firstTimePlay = false;
 
-        if (_skip) break;
+      for (var line in draw.lines) {
+        currentDraw.lines.add(line.copyWith(points: []));
+        for (var point in line.points) {
+          var duration = line.duration ~/ line.points.length;
+          if (cancel) _skip = true;
+          await Future.delayed(Duration(milliseconds: duration));
+          if (_closed) return true;
+          currentDraw.lines.last.points.add(point);
+          streamController.sink.add((currentDraw));
+
+          if (_skip) break;
+        }
+        if (_skip) {
+          streamController.sink.add((draw));
+          break;
+        }
       }
-      if (_skip) {
-        streamController.sink.add((draw));
-        break;
-      }
-    }
-    if (cancel == false) streamCompleteController.sink.add(true);
+      if (cancel == false) streamCompleteController.sink.add(true);
     });
   }
 
   close() {
     streamController?.close();
     streamCompleteController?.close();
+    _closed = true;
   }
 }

@@ -1,5 +1,3 @@
-
-
 export 'whiteboard.dart';
 export 'whiteboard_controller.dart';
 export 'animated_sketch_controller.dart';

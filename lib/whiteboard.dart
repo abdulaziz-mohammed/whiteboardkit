@@ -13,12 +13,14 @@ class Whiteboard extends StatefulWidget {
   // final double width;
   // final double height;
   final WhiteboardController controller;
+  final Color toolboxColor;
 
-  Whiteboard({
-    // this.width = 0,
-    // this.height = 0,
-    @required this.controller,
-  });
+  Whiteboard(
+      {
+      // this.width = 0,
+      // this.height = 0,
+      @required this.controller,
+      this.toolboxColor = Colors.black38});
 
   @override
   WhiteboardState createState() => WhiteboardState();
@@ -79,12 +81,8 @@ class WhiteboardState extends State<Whiteboard> {
                 snapshot.data.lines
                     .forEach((l) => l.wipe ? lines = [] : lines.add(l.clone()));
 
-                lines = scaleLines(
-                    lines,
-                    snapshot.data.width,
-                    snapshot.data.height,
-                    boardSize.width,
-                    boardSize.height);
+                lines = scaleLines(lines, snapshot.data.width,
+                    snapshot.data.height, boardSize.width, boardSize.height);
               }
 
               return Column(
@@ -97,7 +95,8 @@ class WhiteboardState extends State<Whiteboard> {
                         height: boardSize.height,
                         alignment: FractionalOffset.center,
                         decoration: BoxDecoration(
-                          border: Border.all(width: 1.0, color: Colors.black12),
+                          border:
+                              Border.all(width: 1.0, color: Colors.transparent),
                         ),
                         child: GestureDetector(
                           onPanUpdate: (DragUpdateDetails details) {
@@ -128,6 +127,7 @@ class WhiteboardState extends State<Whiteboard> {
                           child: ToolBox(
                             width: boardSize.width,
                             sketchController: widget.controller,
+                            color: widget.toolboxColor,
                           ),
                         ),
                     ],
@@ -139,7 +139,8 @@ class WhiteboardState extends State<Whiteboard> {
     );
   }
 
-  Size calculateScaledSize(WhiteboardDraw draw, double boardWidth, double boardHeight) {
+  Size calculateScaledSize(
+      WhiteboardDraw draw, double boardWidth, double boardHeight) {
     var scaleX = boardWidth / draw.width; // 0.5
     var scaleY = boardHeight / draw.height; // 1
 
@@ -161,7 +162,8 @@ class WhiteboardState extends State<Whiteboard> {
     return new Size(width, height);
   }
 
-  WhiteboardDraw scaleDraw(WhiteboardDraw draw, double boardWidth, double boardHeight) {
+  WhiteboardDraw scaleDraw(
+      WhiteboardDraw draw, double boardWidth, double boardHeight) {
     var scaleX = boardWidth / draw.width; // 0.5
     var scaleY = boardHeight / draw.height; // 1
 

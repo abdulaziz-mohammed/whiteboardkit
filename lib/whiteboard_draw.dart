@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
 
@@ -111,12 +110,6 @@ class Line {
     );
   }
 }
-
-List<Offset> _offsetsFromList(List<List<double>> points) =>
-    points.map((point) => new Offset(point[0], point[1])).toList();
-
-List<List<double>> _offsetsToList(List<Offset> points) =>
-    points.map((point) => <double>[point.dx, point.dy]).toList();
 
 Color _colorFromString(String colorStr) {
   var color = new Color(int.parse(colorStr));

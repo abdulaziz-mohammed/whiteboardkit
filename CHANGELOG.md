@@ -1,3 +1,15 @@
-## [0.0.1] - TODO: Add release date.
+## [0.1.6] - 
 
-* TODO: Describe initial release.
+* initial release.
+
+## [0.1.7] - 
+
+* updated json_annotation package.
+
+## [0.1.8] - 
+
+* removed unused code.
+
+## [0.1.9] - 
+
+* fixed a bug preventing web build

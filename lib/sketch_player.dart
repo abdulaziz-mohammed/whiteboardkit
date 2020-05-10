@@ -4,7 +4,7 @@ import 'package:whiteboardkit/whiteboard.dart';
 import 'animated_sketch_controller.dart';
 
 class SketchPlayer extends StatefulWidget {
-  AnimatedSketchController controller;
+  final AnimatedSketchController controller;
   // final bool skipAnimation;
   final bool hideControls;
 
