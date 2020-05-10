@@ -4,6 +4,7 @@ A Flutter whiteboard widget with so much extendability and flexibility to be use
 
 ![Package demo](screenshot.gif)  
 
+live demo: [https://abdulaziz-mohammed.github.io/whiteboardkit](https://abdulaziz-mohammed.github.io/whiteboardkit)
 ## Usage
 
 import whiteboardkit.dart
