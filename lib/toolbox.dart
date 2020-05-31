@@ -1,19 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:whiteboardkit/toolbox_options.dart';
 
-import 'gesture_whiteboard_controller.dart';
+import 'drawing_controller.dart';
 
 enum ToolBoxSelected { none, size, color, erase }
 
 class ToolBox extends StatefulWidget {
-  final double width;
-  final GestureWhiteboardController sketchController;
+  // final double width;
+  final DrawingController sketchController;
   final Color color;
+  final ToolboxOptions options;
 
   ToolBox(
-      {@required this.width,
+      {
+      // @required this.width,
       @required this.sketchController,
-      @required this.color});
+      @required this.color,
+      @required this.options});
 
   @override
   _ToolBoxState createState() => _ToolBoxState();
@@ -61,10 +65,13 @@ class _ToolBoxState extends State<ToolBox> {
             brushSizes.map((size) => _buildEraseToolSizeButton(size)).toList();
         break;
       case ToolBoxSelected.size:
-        row = brushSizes.map((size) => _buildBrushToolSizeButton(size)).toList();
+        row =
+            brushSizes.map((size) => _buildBrushToolSizeButton(size)).toList();
         break;
       case ToolBoxSelected.color:
-        row = brushColors.map((color) => _buildBrushToolColorButton(color)).toList();
+        row = brushColors
+            .map((color) => _buildBrushToolColorButton(color))
+            .toList();
         break;
       default:
         break;
@@ -84,7 +91,8 @@ class _ToolBoxState extends State<ToolBox> {
                       children: <Widget>[
                         ...row,
                       ],
-                    ) : Container(),
+                    )
+                  : Container(),
             ),
           ),
         ),
@@ -115,7 +123,7 @@ class _ToolBoxState extends State<ToolBox> {
         Container(
           height: 80.0,
           color: Colors.transparent,
-          width: widget.width,
+          // width: widget.width,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
@@ -161,13 +169,14 @@ class _ToolBoxState extends State<ToolBox> {
                       ),
                       onPress: () => {widget.sketchController.wipe()},
                     ),
-                    _buildToolButton(
-                        Icon(
-                          FontAwesomeIcons.undo,
-                          color: widget.color,
-                          size: 24,
-                        ),
-                        onPress: widget.sketchController.undo),
+                    if (widget.options.undo)
+                      _buildToolButton(
+                          Icon(
+                            FontAwesomeIcons.undo,
+                            color: widget.color,
+                            size: 24,
+                          ),
+                          onPress: widget.sketchController.undo),
                   ],
                 ),
                 decoration: BoxDecoration(

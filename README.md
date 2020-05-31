@@ -5,7 +5,7 @@ A Flutter whiteboard widget with so much extendability and flexibility to be use
 ![Package demo](screenshot.gif)  
 
 live demo: [https://abdulaziz-mohammed.github.io/whiteboardkit](https://abdulaziz-mohammed.github.io/whiteboardkit)
-## Usage
+# Usage
 
 import whiteboardkit.dart
 
@@ -13,14 +13,18 @@ import whiteboardkit.dart
 import 'package:whiteboardkit/whiteboardkit.dart';
 ```
 
-define GestureWhiteboardController and listen to change event
+<br/>
+<br/>
+
+## Drawing:
+Define `DrawingController` and listen to change event:
 
 ```dart
-  GestureWhiteboardController controller;
+  DrawingController controller;
 
   @override
   void initState() {
-    controller = new GestureWhiteboardController();
+    controller = new DrawingController();
     controller.onChange().listen((draw){
       //do something with it
     });
@@ -28,7 +32,48 @@ define GestureWhiteboardController and listen to change event
   }
 ```
 
-place your Whiteboard inside a constrained widget ie. container,Expanded etc
+Place your `Whiteboard` inside a constrained widget ie. `Container`,`Expanded` etc
+
+```dart
+@override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(widget.title),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Expanded(
+              child: Whiteboard(
+                controller: controller,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+```
+<br/>
+<br/>
+
+## Playback:
+Define `PlaybackController` and supply it with a `WhiteboardDraw` object:
+
+```dart
+  PlaybackController controller;
+
+  @override
+  void initState() {
+    var draw = WhiteboardDraw.fromWhiteboardSVG("<svg...");
+    controller = new PlaybackController(draw);
+    super.initState();
+  }
+```
+
+Place your `Whiteboard` inside a constrained widget ie. `Container`,`Expanded` etc
 
 ```dart
 @override
@@ -53,3 +98,70 @@ place your Whiteboard inside a constrained widget ie. container,Expanded etc
   }
 ```
 
+<br/>
+<br/>
+
+## Stream (e.g. online whiteboard):
+Define `SketchStreamController`:
+
+```dart
+  PlayerController controller;
+
+  @override
+  void initState() {
+    controller = new SketchStreamController();
+    super.initState();
+  }
+```
+
+Place your `Whiteboard` inside a constrained widget ie. `Container`,`Expanded` etc
+
+```dart
+@override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(widget.title),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Expanded(
+              child: Whiteboard(
+                controller: controller,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+```
+
+Later, supply it with `DrawChunk` when recived from `DrawingController`:
+
+```dart
+  controller.addChunk(chunk);
+```
+
+You'l need to enable chunks producing in `DrawingController` then start listening to new chunks:
+
+```dart
+    controller = new DrawingController(enableChunk: true);
+    _chunkSubscription = controller.onChunk().listen((chunk) {
+    }
+```
+`DrawChunk` supports:  
+- `chunk.toJson()`  
+- `DrawChunk.fromJson("...")`  
+which together can help in transfering chunks through network or any other medium
+<br/>
+<br/>
+
+## `WhiteboardDraw` class:
+
+- ### `Map<String, dynamic>  toJson()`
+- ### `WhiteboardDraw.fromJson(Map<String, dynamic> json)`
+- ### `string getSVG()`:
+    Export to SVG Image format string

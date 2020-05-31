@@ -2,7 +2,7 @@
 # See https://dart.dev/tools/pub/glossary#lockfile
 packages:
   async:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: async
       url: "https://pub.dartlang.org"
@@ -36,6 +36,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.14.12"
+  convert:
+    dependency: transitive
+    description:
+      name: convert
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.1.1"
   fake_async:
     dependency: transitive
     description:
@@ -88,6 +95,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.7.0"
+  petitparser:
+    dependency: transitive
+    description:
+      name: petitparser
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "3.0.2"
   sky_engine:
     dependency: transitive
     description: flutter
@@ -121,6 +135,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.5"
+  synchronized:
+    dependency: "direct main"
+    description:
+      name: synchronized
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.2.0"
   term_glyph:
     dependency: transitive
     description:
@@ -134,7 +155,7 @@ packages:
       name: test_api
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.2.15"
+    version: "0.2.16"
   typed_data:
     dependency: transitive
     description:
@@ -149,5 +170,12 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.8"
+  xml:
+    dependency: "direct main"
+    description:
+      name: xml
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "3.7.0"
 sdks:
-  dart: ">=2.6.0 <3.0.0"
+  dart: ">=2.7.0 <3.0.0"

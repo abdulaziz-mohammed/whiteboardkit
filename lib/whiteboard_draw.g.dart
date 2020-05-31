@@ -8,7 +8,6 @@ part of 'whiteboard_draw.dart';
 
 WhiteboardDraw _$DrawFromJson(Map<String, dynamic> json) {
   return WhiteboardDraw(
-      id: json['id'] as String,
       lines: (json['lines'] as List)
           .map((e) => Line.fromJson(e as Map<String, dynamic>))
           .toList(),
@@ -17,7 +16,6 @@ WhiteboardDraw _$DrawFromJson(Map<String, dynamic> json) {
 }
 
 Map<String, dynamic> _$DrawToJson(WhiteboardDraw instance) => <String, dynamic>{
-      'id': instance.id,
       'lines': instance.lines.map((e) => e.toJson()).toList(),
       'width': instance.width,
       'height': instance.height
@@ -25,7 +23,7 @@ Map<String, dynamic> _$DrawToJson(WhiteboardDraw instance) => <String, dynamic>{
 
 Line _$LineFromJson(Map<String, dynamic> json) {
   return Line(
-      points: (json['points'] as List)
+      points: json['points'] == null? []: (json['points'] as List)
           .map((e) => Point.fromJson(e as Map<String, dynamic>))
           .toList(),
       color: _colorFromString(json['color'] as String),

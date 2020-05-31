@@ -13,3 +13,12 @@
 ## [0.1.9] - 
 
 * fixed a bug preventing web build
+
+## [0.2.0] - 
+
+* added live demo
+
+## [0.2.1] - 
+
+* added stream controller
+* renaming some classes

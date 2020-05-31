@@ -24,11 +24,11 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  GestureWhiteboardController controller;
+  DrawingController controller;
 
   @override
   void initState() {
-    controller = new GestureWhiteboardController();
+    controller = new DrawingController();
     controller.onChange().listen((draw){
       //do something with it
     });

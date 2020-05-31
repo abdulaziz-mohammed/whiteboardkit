@@ -1,6 +1,6 @@
 name: whiteboardkit
 description: An awesome Flutter whiteboard implementation with drawing toolbox.
-version: 0.1.9
+version: 0.2.1
 homepage: https://abdulaziz.dev
 repository: https://github.com/abdulaziz-mohammed/whiteboardkit
 
@@ -12,6 +12,9 @@ dependencies:
     sdk: flutter
   json_annotation: ^3.0.1
   font_awesome_flutter: ^8.4.0
+  xml: ^3.3.1
+  async: ^2.4.1
+  synchronized: ^2.2.0
 
 dev_dependencies:
   flutter_test:
