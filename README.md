@@ -13,8 +13,9 @@ import whiteboardkit.dart
 import 'package:whiteboardkit/whiteboardkit.dart';
 ```
 
-<br/>
-<br/>
+&nbsp;
+&nbsp;
+&nbsp;
 
 ## Drawing:
 Define `DrawingController` and listen to change event:
@@ -56,8 +57,10 @@ Place your `Whiteboard` inside a constrained widget ie. `Container`,`Expanded` e
     );
   }
 ```
-<br/>
-<br/>
+
+&nbsp;
+&nbsp;
+&nbsp;
 
 ## Playback:
 Define `PlaybackController` and supply it with a `WhiteboardDraw` object:
@@ -98,8 +101,9 @@ Place your `Whiteboard` inside a constrained widget ie. `Container`,`Expanded` e
   }
 ```
 
-<br/>
-<br/>
+&nbsp;
+&nbsp;
+&nbsp;
 
 ## Stream (e.g. online whiteboard):
 Define `SketchStreamController`:
@@ -156,8 +160,10 @@ You'l need to enable chunks producing in `DrawingController` then start listenin
 - `chunk.toJson()`  
 - `DrawChunk.fromJson("...")`  
 which together can help in transfering chunks through network or any other medium
-<br/>
-<br/>
+
+&nbsp;
+&nbsp;
+&nbsp;
 
 ## `WhiteboardDraw` class:
 
