@@ -15,6 +15,7 @@ dependencies:
   xml: ^3.3.1
   async: ^2.4.1
   synchronized: ^2.2.0
+  perfect_freehand: ^1.0.4
 
 dev_dependencies:
   flutter_test:

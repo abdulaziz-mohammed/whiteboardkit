@@ -77,15 +77,6 @@ class DrawingController extends WhiteboardController {
       firstPointTime = DateTime.now();
     }
 
-    if (this.draw.lines.last.points.length > 2 &&
-        lastPan != null &&
-        (lastPan.millisecond - DateTime.now().millisecond) < 100) {
-      var a1 = position.dx - this.draw.lines.last.points.last.x;
-      var a2 = position.dy - this.draw.lines.last.points.last.y;
-      var a3 = sqrt(pow(a1, 2) + pow(a2, 2));
-
-      if (a3 < 5) return;
-    }
 
     if (this.draw.lines.last.points.length == 0 ||
         position != this.draw.lines.last.points?.last.toOffset()) {

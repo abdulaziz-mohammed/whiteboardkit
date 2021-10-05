@@ -1,3 +1,4 @@
+import 'package:perfect_freehand/perfect_freehand.dart' as PF;
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -74,8 +75,8 @@ class WhiteboardState extends State<Whiteboard> {
       // if (!initialized)
       // if (Size(constraints.maxWidth, constraints.maxHeight - toolboxOffset) !=
       //     availbleSize)
-        widget.controller.initializeSize(
-            constraints.maxWidth, constraints.maxHeight - toolboxOffset);
+      widget.controller.initializeSize(
+          constraints.maxWidth, constraints.maxHeight - toolboxOffset);
 
       availbleSize =
           Size(constraints.maxWidth, constraints.maxHeight - toolboxOffset);
@@ -107,7 +108,7 @@ class WhiteboardState extends State<Whiteboard> {
                   ),
                   child: GestureDetector(
                     onPanUpdate: (DragUpdateDetails details) {
-                      if(widget.controller.readonly) return;
+                      if (widget.controller.readonly) return;
 
                       RenderBox object = context.findRenderObject();
                       Offset _localPosition =
@@ -116,7 +117,7 @@ class WhiteboardState extends State<Whiteboard> {
                       setState(() {});
                     },
                     onPanEnd: (DragEndDetails details) {
-                      if(widget.controller.readonly) return;
+                      if (widget.controller.readonly) return;
 
                       widget.controller.onPanEnd();
                       setState(() {});
@@ -212,27 +213,49 @@ class SuperPainter extends CustomPainter {
 
     Paint paint = new Paint()
       ..strokeCap = StrokeCap.round
-      ..style = PaintingStyle.stroke;
+      ..style = PaintingStyle.fill;
 
     // if (draw == null || draw.lines == null) return;
     // draw.lines.forEach((l) => l.wipe ? lines = [] : lines.add(l.clone()));
 
     visibleLines.forEach((line) {
-      paint = paint
-        ..color = line.color
-        ..strokeWidth = line.width;
+      paint = paint..color = line.color;
 
       drawLine(canvas, paint, line);
     });
   }
 
   drawLine(Canvas canvas, Paint paint, Line line) {
-    for (int i = 0; i < line.points.length - 1; i++) {
-      if (line.points[i] != null && line.points[i + 1] != null) {
-        canvas.drawLine(
-            line.points[i].toOffset(), line.points[i + 1].toOffset(), paint);
+    final stroke = PF.getStroke(
+        List<PF.Point>.from(
+            line.points.map((point) => PF.Point(point.x, point.y))),
+        size: line.width,
+        thinning: .65,
+        streamline: .4,
+        smoothing: .2,
+        simulatePressure: true);
+
+    final path = Path();
+
+    if (stroke.isEmpty) {
+      return;
+    } else if (stroke.length < 2) {
+      // If the path only has one line, draw a dot.
+      path.addOval(
+          Rect.fromCircle(center: Offset(stroke[0].x, stroke[0].y), radius: 1));
+    } else {
+      // Otherwise, draw a line that connects each point with a curve.
+      path.moveTo(stroke[0].x, stroke[0].y);
+
+      for (int i = 1; i < stroke.length - 1; ++i) {
+        final p0 = stroke[i];
+        final p1 = stroke[i + 1];
+        path.quadraticBezierTo(
+            p0.x, p0.y, (p0.x + p1.x) / 2, (p0.y + p1.y) / 2);
       }
     }
+
+    canvas.drawPath(path, paint);
   }
 
   @override
