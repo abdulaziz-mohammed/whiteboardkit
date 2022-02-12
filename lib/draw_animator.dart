@@ -5,8 +5,8 @@ import 'dart:math';
 import 'package:flutter/widgets.dart';
 import 'whiteboard_draw.dart';
 
-typedef void DrawChanged(WhiteboardDraw draw);
-typedef void DrawCompleted();
+typedef DrawChanged = void Function(WhiteboardDraw draw);
+typedef DrawCompleted = void Function();
 
 class DrawAnimator {
   final DrawChanged onChange;
@@ -15,23 +15,23 @@ class DrawAnimator {
   WhiteboardDraw finalDraw;
 
   @protected
-  Queue<Line> queued;
-  int _playId;
+  late Queue<Line> queued;
+  int? _playId;
 
   bool _skip = false;
 
   skip() => _skip = true;
 
-  Timer playDelay;
+  Timer? playDelay;
 
-  int _resizeId;
+  int? _resizeId;
   bool _resizeNeedResume = false;
 
   DrawAnimator(
-      {@required double width,
-      @required double height,
-      @required this.onChange,
-      @required this.onComplete})
+      {required double width,
+      required double height,
+      required this.onChange,
+      required this.onComplete})
       : finalDraw = WhiteboardDraw.empty(width: width, height: height) {
     queued = Queue.from([]);
     _playId = null;
@@ -39,11 +39,11 @@ class DrawAnimator {
 
   updateSize(double width, double height) async {
     if (_resizeId == null) _resizeNeedResume = _playId != null;
-    var resizeId = _resizeId = new Random().nextInt(1000);
+    var resizeId = _resizeId = Random().nextInt(1000);
 
     await pause();
 
-    Future.delayed(Duration(milliseconds: 200), () {
+    Future.delayed(const Duration(milliseconds: 200), () {
       _updateSize(resizeId, width, height);
     });
   }
@@ -87,8 +87,10 @@ class DrawAnimator {
 
   @protected
   void addLinesToQueue(List<Line> lines) {
-    List<Line> list = List<Line>();
-    lines.forEach((l) => list.add(l));
+    List<Line> list = [];
+    for (var l in lines) {
+      list.add(l);
+    }
 
     queued.addAll(list);
   }
@@ -104,7 +106,7 @@ class DrawAnimator {
   play() {
     var playIdLocal = _playId = new Random().nextInt(100);
 
-    Future.delayed(Duration(milliseconds: 50), () {
+    Future.delayed(const Duration(milliseconds: 50), () {
       _play(playIdLocal);
     });
   }
@@ -134,22 +136,24 @@ class DrawAnimator {
         finalDraw.lines.add(queuedLine.copyWith(points: []));
         // }
 
-        if (queuedLine.points.length == 0 && !_skip && queuedLine.duration > 0)
+        if (queuedLine.points.length == 0 &&
+            !_skip &&
+            queuedLine.duration! > 0) {
           await Future.delayed(
             Duration(
-              milliseconds: queuedLine.duration,
+              milliseconds: queuedLine.duration!,
             ),
           );
-        else
+        } else
           for (var point in points) {
-            var duration =
-                queuedLine.duration ~/ queuedLine.points.length;
-            if (!_skip && queuedLine.duration > 0)
+            var duration = queuedLine.duration! ~/ queuedLine.points.length;
+            if (!_skip && queuedLine.duration! > 0) {
               await Future.delayed(
                 Duration(
                   milliseconds: duration,
                 ),
               );
+            }
 
             if (playIdLocal != _playId) return;
 

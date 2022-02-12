@@ -4,17 +4,17 @@ import 'package:whiteboardkit/draw_animator.dart';
 import 'draw_chunk.dart';
 import 'whiteboard_draw.dart';
 
-typedef void FirstChunkAdded(WhiteboardDraw draw);
+typedef FirstChunkAdded = void Function(WhiteboardDraw draw);
 
 class DrawChunkAnimator extends DrawAnimator {
-  List<DrawChunk> _serializedChunks;
-  List<DrawChunk> _bufferChunks;
+  late List<DrawChunk> _serializedChunks;
+  late List<DrawChunk> _bufferChunks;
 
   bool sizeSet = false;
-  Size availbleSize;
+  Size? availbleSize;
 
   DrawChunkAnimator(
-      {@required DrawChanged onChange, @required DrawCompleted onComplete})
+      {required DrawChanged onChange, required DrawCompleted onComplete})
       : super(
           width: 0,
           height: 0,
@@ -28,20 +28,22 @@ class DrawChunkAnimator extends DrawAnimator {
   addChunk(DrawChunk drawChunk) async {
     if (drawChunk.id == 0) {
       _serializedChunks.clear();
-      this.finalDraw = WhiteboardDraw.empty(
-          width: drawChunk.draw.width, height: drawChunk.draw.height).getScaled(availbleSize.width,  availbleSize.height);
+      finalDraw = WhiteboardDraw.empty(
+              width: drawChunk.draw!.width, height: drawChunk.draw!.height)
+          .getScaled(availbleSize!.width, availbleSize!.height);
       await pause();
     }
 
     var lastChunkId =
-        _serializedChunks.length > 0 ? _serializedChunks.last.id : -1;
+        _serializedChunks.isNotEmpty ? _serializedChunks.last.id! : -1;
 
-    if (drawChunk.id <= lastChunkId) return;
+    if (drawChunk.id! <= lastChunkId) return;
 
-    if (_bufferChunks.indexWhere((a) => a.id == drawChunk.id) == -1)
+    if (_bufferChunks.indexWhere((a) => a.id == drawChunk.id) == -1) {
       _bufferChunks.add(drawChunk);
+    }
 
-    _bufferChunks.sort((a, b) => a.id.compareTo(b.id));
+    _bufferChunks.sort((a, b) => a.id!.compareTo(b.id!));
 
     for (var bufferedChunk in _bufferChunks) {
       if (bufferedChunk.id == lastChunkId + 1) {
@@ -51,24 +53,28 @@ class DrawChunkAnimator extends DrawAnimator {
       }
     }
 
-    _bufferChunks.retainWhere((chunk) => chunk.id > lastChunkId);
+    _bufferChunks.retainWhere((chunk) => chunk.id! > lastChunkId);
   }
 
   _loadChunkToQueue(DrawChunk drawChunk) async {
     await pause();
     var drawPartial =
-        drawChunk.draw.getScaled(finalDraw.width, finalDraw.height);
+        drawChunk.draw!.getScaled(finalDraw.width, finalDraw.height);
     var queuedMilliseconds = queued.fold(
-        0, (previousValue, queuedLine) => previousValue + queuedLine.duration);
-    if (queuedMilliseconds > 4000)
-      queued.forEach((queuedLine) {
+        0,
+        (dynamic previousValue, queuedLine) =>
+            previousValue + queuedLine.duration);
+    if (queuedMilliseconds > 4000) {
+      for (var queuedLine in queued) {
         queuedLine.duration = 0;
-      });
+      }
+    }
 
-    if (DateTime.now().difference(drawChunk.createdAt).inSeconds > 60)
-      drawPartial.lines.forEach((line) {
+    if (DateTime.now().difference(drawChunk.createdAt!).inSeconds > 60) {
+      for (var line in drawPartial.lines) {
         line.duration = 0;
-      });
+      }
+    }
 
     addLinesToQueue(drawPartial.lines);
     await play();

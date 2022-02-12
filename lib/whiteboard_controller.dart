@@ -6,34 +6,34 @@ import 'package:flutter/material.dart';
 import 'toolbox_options.dart';
 import 'whiteboard_draw.dart';
 
-typedef void SizeChanged(Size size);
+typedef SizeChanged = void Function(Size size);
 
 abstract class WhiteboardController {
-  final streamController = StreamController<WhiteboardDraw>.broadcast();
+  final streamController = StreamController<WhiteboardDraw?>.broadcast();
   final sizeChangedController = StreamController<Size>.broadcast();
 
-  WhiteboardDraw draw;
+  WhiteboardDraw? draw;
 
   final bool readonly;
   final bool toolbox;
   final ToolboxOptions toolboxOptions;
 
   WhiteboardController({
-    @required this.readonly,
+    required this.readonly,
     this.toolbox = false,
     this.toolboxOptions = const ToolboxOptions(),
   });
 
   void initializeSize(double width, double height) {
-    if (draw.getScaledSize(width, height) == this.draw.getSize()) return;
-    draw.scale(width, height);
-    streamController.add(draw.copyWith());
+    if (draw!.getScaledSize(width, height) == draw!.getSize()) return;
+    draw!.scale(width, height);
+    streamController.add(draw!.copyWith());
     // print("initializeSize: w=${width} height=${height}");
   }
 
-  WhiteboardDraw getDraw() => draw;
+  WhiteboardDraw? getDraw() => draw;
 
-  Stream<WhiteboardDraw> onChange() {
+  Stream<WhiteboardDraw?> onChange() {
     return streamController.stream;
   }
 
@@ -42,8 +42,8 @@ abstract class WhiteboardController {
   }
 
   close() {
-    streamController?.close();
-    sizeChangedController?.close();
+    streamController.close();
+    sizeChangedController.close();
   }
 
   onPanUpdate(Offset position) {}
@@ -52,7 +52,7 @@ abstract class WhiteboardController {
 }
 
 class PlayControls {
-  Stream<WhiteboardDraw> onComplete() {}
+  Stream<WhiteboardDraw>? onComplete() {}
 
   play() async {}
 

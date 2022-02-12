@@ -28,8 +28,8 @@ Line _$LineFromJson(Map<String, dynamic> json) {
           .toList(),
       color: _colorFromString(json['color'] as String),
       width: (json['width'] as num).toDouble(),
-      wipe: json['wipe'] as bool,
-      duration: json['duration'] as int);
+      wipe: json['wipe'] as bool?,
+      duration: json['duration'] as int?);
 }
 
 Map<String, dynamic> _$LineToJson(Line instance) => <String, dynamic>{
@@ -41,7 +41,7 @@ Map<String, dynamic> _$LineToJson(Line instance) => <String, dynamic>{
     };
 
 Point _$PointFromJson(Map<String, dynamic> json) {
-  return Point((json['x'] as num)?.toDouble(), (json['y'] as num)?.toDouble());
+  return Point((json['x'] as num?)?.toDouble(), (json['y'] as num?)?.toDouble());
 }
 
 Map<String, dynamic> _$PointToJson(Point instance) =>

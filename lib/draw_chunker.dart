@@ -4,7 +4,7 @@ import 'whiteboard_draw.dart';
 
 class DrawChunker {
   final WhiteboardDraw draw;
-  DrawChunk lastChunk;
+  DrawChunk? lastChunk;
 
   int durationInMilliseconds;
 
@@ -12,12 +12,12 @@ class DrawChunker {
 
   int _lastLineIndex = -1;
   int _lastLinePointsChunked = 0;
-  int _lastLineDurationChunked = 0;
+  int? _lastLineDurationChunked = 0;
 
-  DrawChunk next() {
+  DrawChunk? next() {
     var draw = this.draw.copyWith();
 
-    if (draw == null || draw.lines.length == 0) return null;
+    if (draw == null || draw.lines.isEmpty) return null;
 
     var chunkDraw = draw.copyWith(lines: []);
 
@@ -45,38 +45,37 @@ class DrawChunker {
           linePart.duration = durationInMilliseconds;
         } else {
           linePart.duration =
-              draw.lines[_lastLineIndex].duration - _lastLineDurationChunked;
+              draw.lines[_lastLineIndex].duration! - _lastLineDurationChunked!;
         }
         chunkDraw.lines.insert(0, linePart);
       } else {}
     }
 
     // search for wipe and reset if found
-    var wipeIndex = chunkDraw.lines.lastIndexWhere((a) => a.wipe);
+    var wipeIndex = chunkDraw.lines.lastIndexWhere((a) => a.wipe!);
     if (wipeIndex > -1) {
       chunkDraw.lines = chunkDraw.lines.skip(wipeIndex + 1).toList();
       lastChunk = null;
-      if(chunkDraw.lines.length == 0) return null;
+      if (chunkDraw.lines.isEmpty) return null;
     }
 
     _lastLineIndex = draw.lines.length - 1;
 
-    if (draw.lines.length > 0) {
+    if (draw.lines.isNotEmpty) {
       _lastLinePointsChunked = draw.lines.last.points.length;
     } else {
       _lastLinePointsChunked = 0;
     }
 
-    if (chunkDraw.lines.length > 0) {
+    if (chunkDraw.lines.isNotEmpty) {
       _lastLineDurationChunked = chunkDraw.lines.last.duration;
     } else {
       _lastLineDurationChunked = 0;
     }
 
     return lastChunk = DrawChunk(
-      id: lastChunk == null ? 0 : lastChunk.id + 1,
-      draw: chunkDraw,
-      createdAt: DateTime.now()
-    );
+        id: lastChunk == null ? 0 : lastChunk!.id! + 1,
+        draw: chunkDraw,
+        createdAt: DateTime.now());
   }
 }
