@@ -9,7 +9,7 @@ import 'whiteboard_draw.dart';
 class SketchStreamController extends WhiteboardController {
   final completeController = StreamController<bool>.broadcast();
 
-  DrawChunkAnimator animator;
+  DrawChunkAnimator? animator;
 
   SketchStreamController() : super(readonly: true) {
     _init();
@@ -17,8 +17,7 @@ class SketchStreamController extends WhiteboardController {
 
   @override
   initializeSize(double width, double height) {
-    if (this.draw == null)
-      this.draw = WhiteboardDraw.empty(width: width, height: height);
+    draw ??= WhiteboardDraw.empty(width: width, height: height);
 
     super.initializeSize(width, height);
 
@@ -31,14 +30,14 @@ class SketchStreamController extends WhiteboardController {
 
   @override
   close() {
-    completeController?.close();
+    completeController.close();
     animator?.close();
     super.close();
   }
 
   _init() {
     animator?.close();
-    animator = new DrawChunkAnimator(
+    animator = DrawChunkAnimator(
         onChange: (draw) {
           this.draw = draw;
           streamController.sink.add(draw);
@@ -49,13 +48,13 @@ class SketchStreamController extends WhiteboardController {
   void addChunk(DrawChunk drawChunk) {
     if (drawChunk.id == 0) {
       // animator?.updateSize(availbleSize.width, availbleSize.height);
-      this.draw = WhiteboardDraw.empty(
-          width: drawChunk.draw.width, height: drawChunk.draw.height);
+      draw = WhiteboardDraw.empty(
+          width: drawChunk.draw!.width, height: drawChunk.draw!.height);
       // animator?.close();
       // animator = null;
 
       // Future.delayed(Duration(seconds: 5),(){
-      sizeChangedController.sink.add(this.draw.getSize());
+      sizeChangedController.sink.add(draw!.getSize());
       // });
     } else {}
     animator?.addChunk(drawChunk);
@@ -64,5 +63,5 @@ class SketchStreamController extends WhiteboardController {
     // }
   }
 
-  skip() => animator.skip();
+  skip() => animator!.skip();
 }

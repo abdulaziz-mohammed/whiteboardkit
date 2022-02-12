@@ -4,18 +4,19 @@ import 'package:flutter/material.dart';
 import 'package:whiteboardkit/toolbox.dart';
 import 'package:whiteboardkit/whiteboard_controller.dart';
 
+import 'drawing_controller.dart';
 import 'whiteboard_draw.dart';
 import 'whiteboard_style.dart';
 
-typedef void OnChangeCallback(WhiteboardDraw draw);
+typedef OnChangeCallback = void Function(WhiteboardDraw draw);
 
 const HEIGHT_TO_SUBSTRACT = 80.0;
 
 class Whiteboard extends StatefulWidget {
-  final WhiteboardController controller;
+  final WhiteboardController? controller;
   final WhiteboardStyle style;
 
-  Whiteboard({@required this.controller, this.style = const WhiteboardStyle()});
+  Whiteboard({required this.controller, this.style = const WhiteboardStyle()});
 
   @override
   WhiteboardState createState() => WhiteboardState();
@@ -24,34 +25,34 @@ class Whiteboard extends StatefulWidget {
 class WhiteboardState extends State<Whiteboard> {
   //drawing tools
 
-  bool showToolBox;
-  double toolboxOffset;
+  late bool showToolBox;
+  late double toolboxOffset;
 
   // Size boardSize;
-  Size availbleSize;
+  Size? availbleSize;
 
   bool showControls = false;
   bool showFastForward = true;
 
-  StreamSubscription<Size> onSizeChangedSubscription;
-  StreamSubscription<WhiteboardDraw> onCompletedSubscription;
+  StreamSubscription<Size>? onSizeChangedSubscription;
+  StreamSubscription<WhiteboardDraw>? onCompletedSubscription;
 
   @override
   void initState() {
     super.initState();
 
-    showToolBox = widget.controller.toolbox;
+    showToolBox = widget.controller!.toolbox;
     toolboxOffset = showToolBox ? HEIGHT_TO_SUBSTRACT : 0;
 
     if (widget.controller is PlayControls) {
       showControls = true;
       onCompletedSubscription = (widget.controller as PlayControls)
-          .onComplete()
+          .onComplete()!
           .listen((_) => setState(() => showFastForward = false));
     }
 
     onSizeChangedSubscription =
-        widget.controller.onSizeChange().listen((_) => setState(() {}));
+        widget.controller!.onSizeChange().listen((_) => setState(() {}));
   }
 
   @override
@@ -74,8 +75,8 @@ class WhiteboardState extends State<Whiteboard> {
       // if (!initialized)
       // if (Size(constraints.maxWidth, constraints.maxHeight - toolboxOffset) !=
       //     availbleSize)
-        widget.controller.initializeSize(
-            constraints.maxWidth, constraints.maxHeight - toolboxOffset);
+      widget.controller!.initializeSize(
+          constraints.maxWidth, constraints.maxHeight - toolboxOffset);
 
       availbleSize =
           Size(constraints.maxWidth, constraints.maxHeight - toolboxOffset);
@@ -84,7 +85,7 @@ class WhiteboardState extends State<Whiteboard> {
       // print(
       //     "initializeSize: W:${constraints.maxWidth} H:${constraints.maxHeight - toolboxOffset}");
 
-      var boardSize = widget.controller.draw.getSize();
+      var boardSize = widget.controller!.draw!.getSize();
       // print("boardSize: W:${boardSize.width} H:${boardSize.height}");
 
       // print("toolboxOffset:${toolboxOffset}");
@@ -107,28 +108,29 @@ class WhiteboardState extends State<Whiteboard> {
                   ),
                   child: GestureDetector(
                     onPanUpdate: (DragUpdateDetails details) {
-                      if(widget.controller.readonly) return;
+                      if (widget.controller!.readonly) return;
 
-                      RenderBox object = context.findRenderObject();
+                      RenderBox object =
+                          context.findRenderObject() as RenderBox;
                       Offset _localPosition =
                           object.globalToLocal(details.globalPosition);
-                      widget.controller.onPanUpdate(_localPosition);
+                      widget.controller!.onPanUpdate(_localPosition);
                       setState(() {});
                     },
                     onPanEnd: (DragEndDetails details) {
-                      if(widget.controller.readonly) return;
+                      if (widget.controller!.readonly) return;
 
-                      widget.controller.onPanEnd();
+                      widget.controller!.onPanEnd();
                       setState(() {});
                     },
-                    child: StreamBuilder<WhiteboardDraw>(
-                        stream: widget.controller.onChange(),
+                    child: StreamBuilder<WhiteboardDraw?>(
+                        stream: widget.controller!.onChange(),
                         builder: (context, snapshot) {
                           var draw = snapshot.data;
 
                           return CustomPaint(
                             key: UniqueKey(),
-                            foregroundPainter: new SuperPainter(draw),
+                            foregroundPainter: SuperPainter(draw),
                             size: Size.infinite,
                             child: Container(
                               color: Colors.white,
@@ -142,16 +144,16 @@ class WhiteboardState extends State<Whiteboard> {
                     bottom: 0.0,
                     width: boardSize.width,
                     child: ToolBox(
-                      sketchController: widget.controller,
+                      sketchController: widget.controller as DrawingController?,
                       color: widget.style.toolboxColor,
-                      options: widget.controller.toolboxOptions,
+                      options: widget.controller!.toolboxOptions,
                     ),
                   ),
                 if (showControls)
                   showFastForward
                       ? IconButton(
-                          key: ValueKey("skipAnimationButton"),
-                          icon: Icon(Icons.fast_forward),
+                          key: const ValueKey("skipAnimationButton"),
+                          icon: const Icon(Icons.fast_forward),
                           color: Colors.black26,
                           onPressed: skipAnimationPressed,
                           splashColor: Colors.transparent,
@@ -185,32 +187,34 @@ class WhiteboardState extends State<Whiteboard> {
 }
 
 class SuperPainter extends CustomPainter {
-  WhiteboardDraw draw;
+  WhiteboardDraw? draw;
 
-  List<Line> visibleLines;
+  late List<Line> visibleLines;
 
-  Size size;
+  Size? size;
 
   SuperPainter(this.draw) {
-    if (draw != null)
-      size = draw.getSize();
-    else
-      size = new Size(0, 0);
+    if (draw != null) {
+      size = draw!.getSize();
+    } else {
+      size = Size(0, 0);
+    }
 
-    if (draw != null && draw.lines != null) {
-      var lastWipeIndex = draw.lines.lastIndexWhere((l) => l.wipe);
+    if (draw != null && draw!.lines != null) {
+      var lastWipeIndex = draw!.lines.lastIndexWhere((l) => l.wipe!);
       visibleLines =
-          lastWipeIndex > -1 ? draw.lines.sublist(lastWipeIndex) : draw.lines;
-    } else
-      visibleLines = new List<Line>();
+          lastWipeIndex > -1 ? draw!.lines.sublist(lastWipeIndex) : draw!.lines;
+    } else {
+      visibleLines = [];
+    }
   }
 
   @override
   void paint(Canvas canvas, Size size) {
     canvas.clipRect(
-        Rect.fromPoints(new Offset(0, 0), new Offset(size.width, size.height)));
+        Rect.fromPoints(const Offset(0, 0), Offset(size.width, size.height)));
 
-    Paint paint = new Paint()
+    Paint paint = Paint()
       ..strokeCap = StrokeCap.round
       ..style = PaintingStyle.stroke;
 
@@ -220,7 +224,7 @@ class SuperPainter extends CustomPainter {
     visibleLines.forEach((line) {
       paint = paint
         ..color = line.color
-        ..strokeWidth = line.width;
+        ..strokeWidth = line.width!;
 
       drawLine(canvas, paint, line);
     });
@@ -238,6 +242,7 @@ class SuperPainter extends CustomPainter {
   @override
   bool shouldRepaint(SuperPainter oldDelegate) =>
       oldDelegate.size != size ||
-      oldDelegate.visibleLines.fold(0, (total, l) => l.points.length + total) !=
-          visibleLines.fold(0, (total, l) => l.points.length + total);
+      oldDelegate.visibleLines
+              .fold(0, (dynamic total, l) => l.points.length + total) !=
+          visibleLines.fold(0, (dynamic total, l) => l.points.length + total);
 }

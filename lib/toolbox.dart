@@ -8,28 +8,27 @@ enum ToolBoxSelected { none, size, color, erase }
 
 class ToolBox extends StatefulWidget {
   // final double width;
-  final DrawingController sketchController;
+  final DrawingController? sketchController;
   final Color color;
   final ToolboxOptions options;
-
   ToolBox(
       {
       // @required this.width,
-      @required this.sketchController,
-      @required this.color,
-      @required this.options});
+      required this.sketchController,
+      required this.color,
+      required this.options});
 
   @override
   _ToolBoxState createState() => _ToolBoxState();
 }
 
 class _ToolBoxState extends State<ToolBox> {
-  double brushSize;
-  Color brushColor;
-  bool erase;
-  double eraserSize;
+  double? brushSize;
+  Color? brushColor;
+  late bool erase;
+  double? eraserSize;
 
-  ToolBoxSelected selected;
+  ToolBoxSelected? selected;
 
   final brushSizes = <double>[10, 20, 30, 40];
   final brushColors = <Color>[
@@ -50,7 +49,7 @@ class _ToolBoxState extends State<ToolBox> {
 
     selected = ToolBoxSelected.none;
 
-    widget.sketchController.brushSize = brushSize;
+    widget.sketchController!.brushSize = brushSize;
 
     super.initState();
   }
@@ -79,12 +78,12 @@ class _ToolBoxState extends State<ToolBox> {
 
     return Column(
       children: <Widget>[
-        Container(
+        SizedBox(
           width: MediaQuery.of(context).size.width - 1,
           child: Center(
             child: SingleChildScrollView(
               scrollDirection: Axis.horizontal,
-              child: row.length > 0
+              child: row.isNotEmpty
                   ? Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
@@ -133,18 +132,18 @@ class _ToolBoxState extends State<ToolBox> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     _buildToolButton(
-                      Icon(
+                      const Icon(
                         FontAwesomeIcons.pen,
                         size: 20,
                       ),
                       select: ToolBoxSelected.size,
                     ),
-                    _buildToolButton(Icon(Icons.color_lens),
+                    _buildToolButton(const Icon(Icons.color_lens),
                         select: ToolBoxSelected.color, color: brushColor),
                     _buildToolButton(
-                      Icon(
+                      const Icon(
                         FontAwesomeIcons.eraser,
-                        color: new Color(0xffff93f5),
+                        color: Color(0xffff93f5),
                         size: 26.0,
                       ),
                       select: ToolBoxSelected.erase,
@@ -157,7 +156,7 @@ class _ToolBoxState extends State<ToolBox> {
                 ),
               ),
               Container(
-                margin: EdgeInsets.all(10),
+                margin: const EdgeInsets.all(10),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
@@ -167,7 +166,7 @@ class _ToolBoxState extends State<ToolBox> {
                         size: 26.0,
                         color: widget.color,
                       ),
-                      onPress: () => {widget.sketchController.wipe()},
+                      onPress: () => {widget.sketchController!.wipe()},
                     ),
                     if (widget.options.undo)
                       _buildToolButton(
@@ -176,7 +175,7 @@ class _ToolBoxState extends State<ToolBox> {
                             color: widget.color,
                             size: 24,
                           ),
-                          onPress: widget.sketchController.undo),
+                          onPress: widget.sketchController!.undo),
                   ],
                 ),
                 decoration: BoxDecoration(
@@ -192,9 +191,9 @@ class _ToolBoxState extends State<ToolBox> {
   }
 
   Widget _buildToolButton(Icon icon,
-      {ToolBoxSelected select,
-      Function onPress,
-      Color color = Colors.black54,
+      {ToolBoxSelected? select,
+      Function? onPress,
+      Color? color = Colors.black54,
       double size = 30.0}) {
     return IconButton(
       icon: icon,
@@ -203,7 +202,7 @@ class _ToolBoxState extends State<ToolBox> {
       onPressed: () {
         if (select == null) {
           hide();
-          onPress();
+          onPress!();
         } else {
           if (selected == select)
             hide();
@@ -222,8 +221,8 @@ class _ToolBoxState extends State<ToolBox> {
     return Container(
       decoration: BoxDecoration(
         border: Border(
-          top: BorderSide(color: Colors.black12, width: 2),
-          bottom: BorderSide(color: Colors.black12, width: 2),
+          top: const BorderSide(color: Colors.black12, width: 2),
+          bottom: const BorderSide(color: Colors.black12, width: 2),
           right: BorderSide(color: Colors.black12, width: first ? 2 : 1),
           left: BorderSide(color: Colors.black12, width: last ? 2 : 1),
         ),
@@ -232,7 +231,7 @@ class _ToolBoxState extends State<ToolBox> {
       height: 90,
       width: 80,
       child: IconButton(
-        icon: Icon(FontAwesomeIcons.pen),
+        icon: const Icon(FontAwesomeIcons.pen),
         color: Colors.black54,
         iconSize: size * 1.6,
         onPressed: () => changeSize(size),
@@ -248,15 +247,15 @@ class _ToolBoxState extends State<ToolBox> {
     return Container(
       decoration: BoxDecoration(
         border: Border(
-          top: BorderSide(color: Colors.black12, width: 2),
-          bottom: BorderSide(color: Colors.black12, width: 2),
+          top: const BorderSide(color: Colors.black12, width: 2),
+          bottom: const BorderSide(color: Colors.black12, width: 2),
           right: BorderSide(color: Colors.black12, width: first ? 2 : 1),
           left: BorderSide(color: Colors.black12, width: last ? 2 : 1),
         ),
         color: color == brushColor && !erase ? Colors.grey[300] : Colors.white,
       ),
       child: IconButton(
-        icon: Icon(Icons.color_lens),
+        icon: const Icon(Icons.color_lens),
         color: color,
         iconSize: 40.0,
         onPressed: () => changeColor(color),
@@ -272,8 +271,8 @@ class _ToolBoxState extends State<ToolBox> {
     return Container(
       decoration: BoxDecoration(
         border: Border(
-          top: BorderSide(color: Colors.black12, width: 2),
-          bottom: BorderSide(color: Colors.black12, width: 2),
+          top: const BorderSide(color: Colors.black12, width: 2),
+          bottom: const BorderSide(color: Colors.black12, width: 2),
           right: BorderSide(color: Colors.black12, width: first ? 2 : 1),
           left: BorderSide(color: Colors.black12, width: last ? 2 : 1),
         ),
@@ -282,8 +281,8 @@ class _ToolBoxState extends State<ToolBox> {
       height: 60,
       width: 60,
       child: IconButton(
-        icon: Icon(FontAwesomeIcons.eraser),
-        color: new Color(0xffff93f5),
+        icon: const Icon(FontAwesomeIcons.eraser),
+        color: const Color(0xffff93f5),
         iconSize: size,
         onPressed: () => changeEraser(true, size),
         highlightColor: Colors.transparent,
@@ -308,7 +307,7 @@ class _ToolBoxState extends State<ToolBox> {
     setState(() {
       changeEraser(false, eraserSize);
       brushSize = size;
-      widget.sketchController.brushSize = brushSize;
+      widget.sketchController!.brushSize = brushSize;
       hide();
     });
   }
@@ -317,17 +316,17 @@ class _ToolBoxState extends State<ToolBox> {
     setState(() {
       changeEraser(false, eraserSize);
       brushColor = color;
-      widget.sketchController.brushColor = color;
+      widget.sketchController!.brushColor = color;
       hide();
     });
   }
 
-  void changeEraser(bool erase, double size) {
+  void changeEraser(bool erase, double? size) {
     setState(() {
       eraserSize = size;
       this.erase = erase;
-      widget.sketchController.erase = erase;
-      widget.sketchController.eraserSize = size;
+      widget.sketchController!.erase = erase;
+      widget.sketchController!.eraserSize = size;
       hide();
     });
   }

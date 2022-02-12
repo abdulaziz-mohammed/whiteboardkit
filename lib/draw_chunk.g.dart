@@ -8,7 +8,7 @@ part of 'draw_chunk.dart';
 
 DrawChunk _$DrawChunkFromJson(Map<String, dynamic> json) {
   return DrawChunk(
-    id: json['id'] as int,
+    id: json['id'] as int?,
     draw: WhiteboardDraw.fromJson(json["draw"]),
     createdAt: DateTime.parse(json['createdAt']),
   );
@@ -16,6 +16,6 @@ DrawChunk _$DrawChunkFromJson(Map<String, dynamic> json) {
 
 Map<String, dynamic> _$DrawChunkToJson(DrawChunk instance) => <String, dynamic>{
       'id': instance.id,
-      'draw': instance.draw.toJson(),
-      'createdAt': instance.createdAt.toIso8601String(),
+      'draw': instance.draw!.toJson(),
+      'createdAt': instance.createdAt!.toIso8601String(),
     };
